@@ -1,61 +1,54 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections;
 using UnityEngine;
+using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
-    public float speed = 5.0f;
+    public float speed = 10;
 
-    public bool hasPowerup;
-
-    public GameObject powerupIndicator;
-
+    public GameObject followCamera;
+    
     private Rigidbody rb;
-    private GameObject focalPoint;
-
-    private float powerupStrength = 15.0f;
     
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        focalPoint = GameObject.Find("Focal Point");
     }
 
-    void Update()
+    void FixedUpdate()
     {
-        float forwardInput = Input.GetAxis("Vertical");
-        rb.AddForce(focalPoint.transform.forward * speed * forwardInput);
-        powerupIndicator.transform.position = transform.position + new Vector3(0.0f, -0.5f, 0.0f);
-    }
+        float cameraDirection = followCamera.GetComponent<CameraController>().viewAngleX;
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Powerup"))
+        if (Input.GetKey("w")) rb.AddForce(createVectorFromDirection(cameraDirection) * speed);
+        if (Input.GetKey("s")) rb.AddForce(-createVectorFromDirection(cameraDirection) *  speed);
+        if (Input.GetKey("a"))
         {
-            hasPowerup = true;
-            Destroy(other.gameObject);
-            powerupIndicator.gameObject.SetActive(true);
-            StartCoroutine(PowerupCountdownRoutine());
+            if (cameraDirection - 90.0f <= -180.0f)
+            {
+                rb.AddForce(-createVectorFromDirection(cameraDirection - 270.0f) * speed);
+            }
+            else
+            {
+                rb.AddForce(createVectorFromDirection(cameraDirection - 90.0f) * speed);
+            }
+        }
+        if (Input.GetKey("d"))
+        {
+            if (cameraDirection + 90.0f > 180.0f)
+            {
+                rb.AddForce(createVectorFromDirection(cameraDirection - 270.0f) * speed);
+            }
+            else
+            {
+                rb.AddForce(createVectorFromDirection(cameraDirection + 90.0f) * speed);
+            }
         }
     }
 
-    IEnumerator PowerupCountdownRoutine()
+    Vector3 createVectorFromDirection(float direction)
     {
-        yield return new WaitForSeconds(7);
-        hasPowerup = false;
-        powerupIndicator.gameObject.SetActive(false);
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("Enemy") && hasPowerup)
-        {
-            Rigidbody enemyRb = collision.gameObject.GetComponent<Rigidbody>();
-            Vector3 awayFromPlayer = collision.gameObject.transform.position - transform.position;
-            
-            Debug.Log("Player collided with " + collision.gameObject + " with powerup set to " + hasPowerup);
-
-            enemyRb.AddForce(awayFromPlayer * powerupStrength, ForceMode.Impulse);
-        }
+        return new Vector3(Mathf.Sin(direction * Mathf.Deg2Rad), 0.0f, Mathf.Cos(direction * Mathf.Deg2Rad));
     }
 }
