@@ -8,13 +8,24 @@ public class PlayerController : MonoBehaviour
 {
     public float speed = 10;
 
-    public GameObject followCamera;
-    
+    public GameObject followCamera, powerUpIndicator;
+
+    public List<GameObject> powerUpIndicatorPrefabs;
+
+    public PowerUp.Type powerUpState;
+
     private Rigidbody rb;
     
     void Start()
     {
+        powerUpState = PowerUp.Type.NONE;
+        
         rb = GetComponent<Rigidbody>();
+    }
+
+    void Update()
+    {
+        powerUpIndicator.transform.position = transform.position;
     }
 
     void FixedUpdate()
@@ -50,5 +61,47 @@ public class PlayerController : MonoBehaviour
     Vector3 createVectorFromDirection(float direction)
     {
         return new Vector3(Mathf.Sin(direction * Mathf.Deg2Rad), 0.0f, Mathf.Cos(direction * Mathf.Deg2Rad));
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Power Up"))
+        {
+            if (powerUpState == PowerUp.Type.NONE)
+            {
+                PowerUp powerUp = other.GetComponent<PowerUp>();
+                powerUpState = powerUp.type;
+                UpdatePowerUpIndicator();
+                Destroy(other.gameObject);
+            }
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            if (powerUpState == PowerUp.Type.BOUNCE)
+            {
+                List<GameObject> nearbyEnemies = new List<GameObject>();
+                foreach (GameObject enemyObject in GameObject.FindGameObjectsWithTag("Enemy")) if (Vector3.Distance(transform.position, enemyObject.transform.position) <= 5) nearbyEnemies.Add(enemyObject);
+                foreach (GameObject enemyObject in nearbyEnemies) enemyObject.GetComponent<Rigidbody>().AddExplosionForce(50.0f, transform.position, 5.0f, 1.0f, ForceMode.Impulse);
+                powerUpState = PowerUp.Type.NONE;
+                UpdatePowerUpIndicator();
+            }
+        }
+    }
+
+    void UpdatePowerUpIndicator()
+    {
+        switch (powerUpState)
+        {
+            case PowerUp.Type.NONE:
+                powerUpIndicator.GetComponent<MeshFilter>().mesh = null;
+                break;
+            case PowerUp.Type.BOUNCE:
+                powerUpIndicator.GetComponent<MeshFilter>().mesh = powerUpIndicatorPrefabs[0].GetComponent<MeshFilter>().sharedMesh;
+                break;
+        }
     }
 }
