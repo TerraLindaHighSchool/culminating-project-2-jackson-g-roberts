@@ -4,22 +4,28 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public GameObject enemyPrefab, dummyPrefab, powerupPrefab;
+    public GameObject enemyPrefab, bossPrefab, dummyPrefab, powerupPrefab;
+
+    public GameObject island;
 
     public List<GameObject> powerUpIndicatorPrefabs;
 
     public int level = 0;
 
+    public bool gameOver;
+
     private float spawnRange = 9.0f;
 
     void Start()
     {
+        gameOver = false;
+        
         LoadLevel(level);
     }
 
     void Update()
     {
-        if (GameObject.FindGameObjectsWithTag("Enemy").Length <= 0) loadNextLevel();
+        if (GameObject.FindGameObjectsWithTag("Enemy").Length <= 0 && GameObject.FindGameObjectsWithTag("Boss").Length <= 0 && !gameOver) loadNextLevel();
     }
 
     void loadNextLevel()
@@ -37,19 +43,42 @@ public class GameManager : MonoBehaviour
             case 0:
                 SpawnDummies(1);
                 SpawnPowerUps(new[] { PowerUp.Type.BOUNCE });
+                island.transform.localScale = new Vector3(10.0f, 5.0f, 10.0f);
                 break;
             case 1:
                 foreach (GameObject powerUp in GameObject.FindGameObjectsWithTag("Power Up")) Destroy(powerUp);
                 SpawnEnemies(1);
                 SpawnPowerUps(new[] { PowerUp.Type.BOUNCE });
+                island.transform.localScale = new Vector3(10.0f, 5.0f, 10.0f);
                 break;
             case 2:
                 SpawnEnemies(2);
                 SpawnPowerUps(new[] { PowerUp.Type.BOUNCE });
+                island.transform.localScale = new Vector3(8.0f, 5.0f, 8.0f);
                 break;
             case 3:
                 SpawnEnemies(4);
                 SpawnPowerUps(new[] { PowerUp.Type.BOUNCE, PowerUp.Type.BOUNCE });
+                island.transform.localScale = new Vector3(8.0f, 5.0f, 8.0f);
+                break;
+            case 4:
+                SpawnEnemies(6);
+                SpawnPowerUps(new[] { PowerUp.Type.BOUNCE, PowerUp.Type.BOUNCE });
+                island.transform.localScale = new Vector3(6.5f, 5.0f, 6.5f);
+                break;
+            case 5:
+                SpawnEnemies(10);
+                SpawnPowerUps(new[] { PowerUp.Type.BOUNCE, PowerUp.Type.BOUNCE });
+                island.transform.localScale = new Vector3(5.0f, 5.0f, 5.0f);
+                break;
+            case 6:
+                SpawnEnemies(15);
+                SpawnPowerUps(new[] { PowerUp.Type.BOUNCE, PowerUp.Type.BOUNCE });
+                island.transform.localScale = new Vector3(5.0f, 5.0f, 5.0f);
+                break;
+            case 7:
+                SpawnBosses(1);
+                SpawnPowerUps(new[] { PowerUp.Type.BOUNCE, PowerUp.Type.BOUNCE, PowerUp.Type.BOUNCE });
                 break;
             default:
                 Debug.Log("Attempted to load invalid level " + levelToLoad);
@@ -74,6 +103,11 @@ public class GameManager : MonoBehaviour
     void SpawnDummies(int numOfDummies)
     {
         for (int i = 0; i < numOfDummies; i++) Instantiate(dummyPrefab, GenerateSpawnPosition(), dummyPrefab.transform.rotation);
+    }
+
+    void SpawnBosses(int numOfBosses)
+    {
+        for (int i = 0; i < numOfBosses; i++) Instantiate(bossPrefab, GenerateSpawnPosition(), bossPrefab.transform.rotation);
     }
 
     private Vector3 GenerateSpawnPosition()

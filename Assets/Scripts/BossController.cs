@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour
+public class BossController : MonoBehaviour
 {
     public float speed;
 
@@ -10,6 +10,8 @@ public class Enemy : MonoBehaviour
     private GameObject player;
 
     private GameManager gameManager;
+
+    private int numOfHits;
     
     void Start()
     {
@@ -25,5 +27,12 @@ public class Enemy : MonoBehaviour
             Vector3 lookDirection = (player.transform.position - transform.position).normalized;
             rb.AddForce(lookDirection * speed);
         }
+    }
+
+    public void isHit(GameObject player)
+    {
+        numOfHits++;
+        GetComponent<Rigidbody>().mass--;
+        GetComponent<Rigidbody>().AddExplosionForce(numOfHits * 10.0f, player.transform.position, 10.0f, numOfHits, ForceMode.Impulse);
     }
 }

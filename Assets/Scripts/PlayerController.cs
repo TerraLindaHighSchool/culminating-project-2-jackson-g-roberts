@@ -15,17 +15,29 @@ public class PlayerController : MonoBehaviour
     public PowerUp.Type powerUpState;
 
     private Rigidbody rb;
+
+    private GameManager gameManager;
     
     void Start()
     {
         powerUpState = PowerUp.Type.NONE;
         
         rb = GetComponent<Rigidbody>();
+
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
 
     void Update()
     {
         powerUpIndicator.transform.position = transform.position;
+
+        if (transform.position.y <= -10)
+        {
+            gameManager.gameOver = true;
+            powerUpState = PowerUp.Type.NONE;
+            UpdatePowerUpIndicator();
+            Destroy(gameObject);
+        }
     }
 
     void FixedUpdate()
@@ -85,6 +97,20 @@ public class PlayerController : MonoBehaviour
             {
                 List<GameObject> nearbyEnemies = new List<GameObject>();
                 foreach (GameObject enemyObject in GameObject.FindGameObjectsWithTag("Enemy")) if (Vector3.Distance(transform.position, enemyObject.transform.position) <= 5) nearbyEnemies.Add(enemyObject);
+                if (!nearbyEnemies.Contains(collision.gameObject)) nearbyEnemies.Add(collision.gameObject);
+                foreach (GameObject enemyObject in nearbyEnemies) enemyObject.GetComponent<Rigidbody>().AddExplosionForce(50.0f, transform.position, 5.0f, 1.0f, ForceMode.Impulse);
+                powerUpState = PowerUp.Type.NONE;
+                UpdatePowerUpIndicator();
+            }
+        }
+        if (collision.gameObject.CompareTag("Boss"))
+        {
+            collision.gameObject.GetComponent<BossController>().isHit(gameObject);
+            if (powerUpState == PowerUp.Type.BOUNCE)
+            {
+                List<GameObject> nearbyEnemies = new List<GameObject>();
+                foreach (GameObject enemyObject in GameObject.FindGameObjectsWithTag("Enemy")) if (Vector3.Distance(transform.position, enemyObject.transform.position) <= 5) nearbyEnemies.Add(enemyObject);
+                if (!nearbyEnemies.Contains(collision.gameObject)) nearbyEnemies.Add(collision.gameObject);
                 foreach (GameObject enemyObject in nearbyEnemies) enemyObject.GetComponent<Rigidbody>().AddExplosionForce(50.0f, transform.position, 5.0f, 1.0f, ForceMode.Impulse);
                 powerUpState = PowerUp.Type.NONE;
                 UpdatePowerUpIndicator();

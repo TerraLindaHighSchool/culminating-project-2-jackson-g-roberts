@@ -11,13 +11,29 @@ public class CameraController : MonoBehaviour
 
     public float viewAngleX;
     public float viewAngleY;
-    
+
+    private GameManager gameManager;
+
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
+
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
 
     void LateUpdate()
+    {
+        if (!gameManager.gameOver)
+        {
+            orbitAroundPlayer();
+        }
+        else
+        {
+
+        }
+    }
+
+    void orbitAroundPlayer()
     {
         float mouseMoveX = Input.GetAxis("Mouse X");
         viewAngleX += mouseMoveX * sensitivity * (1 - Time.deltaTime);

@@ -7,6 +7,6 @@ public class DestroyOutOfBounds : MonoBehaviour
 
     void LateUpdate()
     {
-        if (transform.position.y <= -5) Destroy(gameObject);
+        if (transform.position.y <= -10) Destroy(gameObject);
     }
 }
