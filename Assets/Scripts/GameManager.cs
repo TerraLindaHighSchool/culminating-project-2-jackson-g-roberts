@@ -31,6 +31,7 @@ public class GameManager : MonoBehaviour
     void loadNextLevel()
     {
         level++;
+        foreach (GameObject powerUp in GameObject.FindGameObjectsWithTag("Power Up")) powerUp.GetComponent<PowerUp>().levelAge++;
         LoadLevel(level);
     }
 
@@ -88,7 +89,7 @@ public class GameManager : MonoBehaviour
 
     PowerUp.Type ChoosePowerUpType()
     {
-        return (PowerUp.Type) /*Random.Range(1, 4)*/3;
+        return (PowerUp.Type) Random.Range(1, 4);
     }
 
     void SpawnPowerUps(PowerUp.Type[] types)

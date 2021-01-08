@@ -115,7 +115,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Power Up"))
+        if (other.CompareTag("Power Up") && isCollideable)
         {
             if (powerUpState == PowerUp.Type.NONE)
             {
