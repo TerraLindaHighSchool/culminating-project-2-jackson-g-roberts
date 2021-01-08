@@ -839,7 +839,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 3756fc86e9392704189d90ab05d990aa, type: 2}
+  - {fileID: 2100000, guid: 9066a2f8ec9e35e42ad064470b2c0069, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -895,6 +895,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 10
+  launchSpeed: 15
+  isCollideable: 0
   followCamera: {fileID: 1211419925}
   powerUpIndicator: {fileID: 1616433691}
   powerUpIndicatorPrefabs:

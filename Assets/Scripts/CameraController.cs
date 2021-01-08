@@ -50,6 +50,7 @@ public class CameraController : MonoBehaviour
         if (Physics.Raycast(player.transform.position, transform.TransformDirection(Vector3.back), out hit, followDist))
         {
             maxDist = hit.distance - 0.5f;
+            if ((hit.transform.gameObject.CompareTag("Enemy") || hit.transform.gameObject.CompareTag("Boss")) && !player.GetComponent<PlayerController>().isCollideable) maxDist = hit.distance;
         }
 
         Vector3 xPositionMod = new Vector3(-Mathf.Sin(viewAngleX * Mathf.Deg2Rad), 0.0f, -Mathf.Cos(viewAngleX * Mathf.Deg2Rad)) * (maxDist * Mathf.Cos(viewAngleY * Mathf.Deg2Rad));

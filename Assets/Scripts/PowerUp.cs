@@ -6,11 +6,6 @@ public class PowerUp : MonoBehaviour
 {
     public Type type;
     
-    void Start()
-    {
-
-    }
-    
     void Update()
     {
         transform.Rotate(new Vector3(0.0f, 15.0f, 0.0f) * Time.deltaTime);
@@ -19,6 +14,8 @@ public class PowerUp : MonoBehaviour
     public enum Type
     {
         NONE,
-        BOUNCE
+        BOUNCE,
+        LAUNCH,
+        NOCLIP
     }
 }

@@ -8,6 +8,10 @@ public class PlayerController : MonoBehaviour
 {
     public float speed = 10;
 
+    public float launchSpeed = 15;
+
+    public bool isCollideable;
+
     public GameObject followCamera, powerUpIndicator;
 
     public List<GameObject> powerUpIndicatorPrefabs;
@@ -21,6 +25,8 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         powerUpState = PowerUp.Type.NONE;
+
+        isCollideable = true;
         
         rb = GetComponent<Rigidbody>();
 
@@ -43,36 +49,68 @@ public class PlayerController : MonoBehaviour
     void FixedUpdate()
     {
         float cameraDirection = followCamera.GetComponent<CameraController>().viewAngleX;
+        float cameraVertDirection = followCamera.GetComponent<CameraController>().viewAngleY;
 
-        if (Input.GetKey("w")) rb.AddForce(createVectorFromDirection(cameraDirection) * speed);
-        if (Input.GetKey("s")) rb.AddForce(-createVectorFromDirection(cameraDirection) *  speed);
+        if (Input.GetKey("w")) rb.AddForce(createVectorFromDirection(cameraDirection, false) * speed);
+        if (Input.GetKey("s")) rb.AddForce(-createVectorFromDirection(cameraDirection, false) *  speed);
         if (Input.GetKey("a"))
         {
             if (cameraDirection - 90.0f <= -180.0f)
             {
-                rb.AddForce(-createVectorFromDirection(cameraDirection - 270.0f) * speed);
+                rb.AddForce(-createVectorFromDirection(cameraDirection - 270.0f, false) * speed);
             }
             else
             {
-                rb.AddForce(createVectorFromDirection(cameraDirection - 90.0f) * speed);
+                rb.AddForce(createVectorFromDirection(cameraDirection - 90.0f, false) * speed);
             }
         }
         if (Input.GetKey("d"))
         {
             if (cameraDirection + 90.0f > 180.0f)
             {
-                rb.AddForce(createVectorFromDirection(cameraDirection - 270.0f) * speed);
+                rb.AddForce(createVectorFromDirection(cameraDirection - 270.0f, false) * speed);
             }
             else
             {
-                rb.AddForce(createVectorFromDirection(cameraDirection + 90.0f) * speed);
+                rb.AddForce(createVectorFromDirection(cameraDirection + 90.0f, false) * speed);
+            }
+        }
+
+        if (Input.GetKey("space"))
+        {
+            if (powerUpState == PowerUp.Type.LAUNCH)
+            {
+                rb.AddForce(Vector3.up * 5, ForceMode.Impulse);
+                rb.AddForce(createVectorFromDirection(cameraDirection, true) * 15, ForceMode.Impulse);
+                powerUpState = PowerUp.Type.NONE;
+                UpdatePowerUpIndicator();
+            }
+
+            if (powerUpState == PowerUp.Type.NOCLIP)
+            {
+                isCollideable = false;
+                rb.useGravity = false;
+                GetComponent<SphereCollider>().enabled = false;
+                GetComponent<MeshRenderer>().material.color = new Color(1.0f, 1.0f, 1.0f, 0.5f);
+                powerUpState = PowerUp.Type.NONE;
+                UpdatePowerUpIndicator();
+                StartCoroutine(NoclipCountdownRoutine());
             }
         }
     }
 
-    Vector3 createVectorFromDirection(float direction)
+    IEnumerator NoclipCountdownRoutine()
     {
-        return new Vector3(Mathf.Sin(direction * Mathf.Deg2Rad), 0.0f, Mathf.Cos(direction * Mathf.Deg2Rad));
+        yield return new WaitForSeconds(5);
+        isCollideable = true;
+        rb.useGravity = true;
+        GetComponent<SphereCollider>().enabled = true;
+        GetComponent<MeshRenderer>().material.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+    }
+
+    Vector3 createVectorFromDirection(float direction, bool useVert)
+    {
+        return new Vector3(Mathf.Sin(direction * Mathf.Deg2Rad), useVert ? Mathf.Sin(followCamera.GetComponent<CameraController>().viewAngleY * Mathf.Deg2Rad) : 0.0f, Mathf.Cos(direction * Mathf.Deg2Rad));
     }
 
     private void OnTriggerEnter(Collider other)
@@ -120,14 +158,12 @@ public class PlayerController : MonoBehaviour
 
     void UpdatePowerUpIndicator()
     {
-        switch (powerUpState)
+        if (powerUpState == PowerUp.Type.NONE)
         {
-            case PowerUp.Type.NONE:
-                powerUpIndicator.GetComponent<MeshFilter>().mesh = null;
-                break;
-            case PowerUp.Type.BOUNCE:
-                powerUpIndicator.GetComponent<MeshFilter>().mesh = powerUpIndicatorPrefabs[0].GetComponent<MeshFilter>().sharedMesh;
-                break;
+            powerUpIndicator.GetComponent<MeshFilter>().mesh = null;
+            return;
         }
+
+        powerUpIndicator.GetComponent<MeshFilter>().mesh = powerUpIndicatorPrefabs[(int) powerUpState - 1].GetComponent<MeshFilter>().sharedMesh;
     }
 }
