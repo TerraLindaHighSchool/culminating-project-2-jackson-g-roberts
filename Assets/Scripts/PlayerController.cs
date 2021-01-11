@@ -10,6 +10,8 @@ public class PlayerController : MonoBehaviour
 
     public float launchSpeed = 15;
 
+    public float launchUpForce = 5;
+
     public bool isCollideable;
 
     public GameObject followCamera, powerUpIndicator;
@@ -36,6 +38,7 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         powerUpIndicator.transform.position = transform.position;
+        powerUpIndicator.transform.Rotate(new Vector3(0.0f, 15.0f, 0.0f) * Time.deltaTime);
 
         if (transform.position.y <= -10)
         {
@@ -80,8 +83,8 @@ public class PlayerController : MonoBehaviour
         {
             if (powerUpState == PowerUp.Type.LAUNCH)
             {
-                rb.AddForce(Vector3.up * 5, ForceMode.Impulse);
-                rb.AddForce(createVectorFromDirection(cameraDirection, true) * 15, ForceMode.Impulse);
+                rb.AddForce(Vector3.up * launchUpForce, ForceMode.Impulse);
+                rb.AddForce(createVectorFromDirection(cameraDirection, false) * launchSpeed, ForceMode.Impulse);
                 powerUpState = PowerUp.Type.NONE;
                 UpdatePowerUpIndicator();
             }

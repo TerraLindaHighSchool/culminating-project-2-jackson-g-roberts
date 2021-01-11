@@ -104,7 +104,25 @@ public class GameManager : MonoBehaviour
 
     void SpawnEnemies(int numOfEnemies)
     {
-        for (int i = 0; i < numOfEnemies; i++) Instantiate(enemyPrefab, GenerateSpawnPosition(), enemyPrefab.transform.rotation);
+        for (int i = 0; i < numOfEnemies; i++)
+        {
+            GameObject newEnemy = Instantiate(enemyPrefab, GenerateSpawnPosition(), enemyPrefab.transform.rotation);
+            switch (Random.Range(0, 3))
+            {
+                case 0:
+                    newEnemy.GetComponent<Enemy>().type = Enemy.Type.NORMAL;
+                    break;
+                case 1:
+                    newEnemy.GetComponent<Enemy>().type = Enemy.Type.BIG;
+                    break;
+                case 2:
+                    newEnemy.GetComponent<Enemy>().type = Enemy.Type.LEAP;
+                    break;
+                default:
+                    newEnemy.GetComponent<Enemy>().type = Enemy.Type.NORMAL;
+                    break;
+            }
+        }
     }
 
     void SpawnDummies(int numOfDummies)
