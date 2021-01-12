@@ -6,6 +6,9 @@ public class BossController : MonoBehaviour
 {
     public float speed;
 
+    public float playerLaunchForce = 2.0f;
+    public float playerLaunchUpForce = 1.0f;
+
     private Rigidbody rb;
     private GameObject player;
 
@@ -29,10 +32,16 @@ public class BossController : MonoBehaviour
         }
     }
 
+    public Vector3 GetPlayerLaunchVector(GameObject player)
+    {
+        Vector3 vectorFromBoss = (player.transform.position - transform.position);
+        return new Vector3(vectorFromBoss.x * playerLaunchForce, playerLaunchUpForce, vectorFromBoss.z * playerLaunchForce);
+    }
+
     public void isHit(GameObject player)
     {
         numOfHits++;
         GetComponent<Rigidbody>().mass--;
-        GetComponent<Rigidbody>().AddExplosionForce(numOfHits * 10.0f, player.transform.position, 10.0f, numOfHits, ForceMode.Impulse);
+        GetComponent<Rigidbody>().AddExplosionForce(numOfHits * 15.0f, player.transform.position, 15.0f, numOfHits, ForceMode.Impulse);
     }
 }

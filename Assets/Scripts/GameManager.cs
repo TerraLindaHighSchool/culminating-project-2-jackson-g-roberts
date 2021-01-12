@@ -48,6 +48,8 @@ public class GameManager : MonoBehaviour
                 break;
             case 1:
                 foreach (GameObject powerUp in GameObject.FindGameObjectsWithTag("Power Up")) Destroy(powerUp);
+                GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>().powerUpState = PowerUp.Type.NONE;
+                GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>().UpdatePowerUpIndicator();
                 SpawnEnemies(1);
                 SpawnPowerUps(new[] { ChoosePowerUpType() });
                 island.transform.localScale = new Vector3(10.0f, 5.0f, 10.0f);
@@ -80,6 +82,7 @@ public class GameManager : MonoBehaviour
             case 7:
                 SpawnBosses(1);
                 SpawnPowerUps(new[] { ChoosePowerUpType(), ChoosePowerUpType(), ChoosePowerUpType() });
+                island.transform.localScale = new Vector3(10.0f, 5.0f, 10.0f);
                 break;
             default:
                 Debug.Log("Attempted to load invalid level " + levelToLoad);

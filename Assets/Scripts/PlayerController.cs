@@ -147,6 +147,7 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.CompareTag("Boss"))
         {
             collision.gameObject.GetComponent<BossController>().isHit(gameObject);
+            rb.AddForce(collision.gameObject.GetComponent<BossController>().GetPlayerLaunchVector(gameObject), ForceMode.Impulse);
             if (powerUpState == PowerUp.Type.BOUNCE)
             {
                 List<GameObject> nearbyEnemies = new List<GameObject>();
@@ -159,7 +160,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void UpdatePowerUpIndicator()
+    public void UpdatePowerUpIndicator()
     {
         if (powerUpState == PowerUp.Type.NONE)
         {

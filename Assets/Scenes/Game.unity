@@ -560,7 +560,7 @@ MonoBehaviour:
   - {fileID: 1742899641471652, guid: 923deea38dc6a8843b15db7638919c1e, type: 3}
   - {fileID: 1887969965315444, guid: 1656aec7f2b3ffe45a91801f58b00253, type: 3}
   - {fileID: 1758629138285362, guid: 11a653b9169986c4f9436a3002fb4516, type: 3}
-  level: 0
+  level: 7
   gameOver: 0
 --- !u!4 &552467090
 Transform:
@@ -1066,7 +1066,7 @@ GameObject:
   - component: {fileID: 1488819260}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
