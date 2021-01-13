@@ -25,7 +25,7 @@ public class BossController : MonoBehaviour
 
     void Update()
     {
-        if (!gameManager.gameOver)
+        if (gameManager.gameState == GameManager.GameState.STARTED)
         {
             Vector3 lookDirection = (player.transform.position - transform.position).normalized;
             rb.AddForce(lookDirection * speed);

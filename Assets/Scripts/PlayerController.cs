@@ -42,7 +42,7 @@ public class PlayerController : MonoBehaviour
 
         if (transform.position.y <= -10)
         {
-            gameManager.gameOver = true;
+            gameManager.gameState = GameManager.GameState.OVER;
             powerUpState = PowerUp.Type.NONE;
             UpdatePowerUpIndicator();
             Destroy(gameObject);

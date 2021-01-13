@@ -34,7 +34,7 @@ public class Enemy : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (!gameManager.gameOver)
+        if (gameManager.gameState == GameManager.GameState.STARTED)
         {
             Vector3 lookDirection = (player.transform.position - transform.position).normalized;
             rb.AddForce(lookDirection * speed);
@@ -43,7 +43,7 @@ public class Enemy : MonoBehaviour
 
     void Leap()
     {
-        if (!gameManager.gameOver)
+        if (gameManager.gameState == GameManager.GameState.STARTED)
         {
             Vector3 lookDirection = (player.transform.position - transform.position).normalized;
             rb.AddForce(new Vector3(lookDirection.x, lookDirection.y + leapUpForce, lookDirection.z) * leapForce, ForceMode.Impulse);

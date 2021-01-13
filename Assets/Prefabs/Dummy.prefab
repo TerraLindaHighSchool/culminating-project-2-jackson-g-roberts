@@ -125,6 +125,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 2
+  leapForce: 5
+  leapUpForce: 5
+  type: 0
 --- !u!114 &3010197010029808443
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -132,7 +135,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8524270238378579734}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4d68d2a52d9ae3b4b9559219d9f70ae5, type: 3}
   m_Name: 

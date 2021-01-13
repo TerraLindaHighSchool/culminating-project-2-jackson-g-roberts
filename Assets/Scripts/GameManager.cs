@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -8,24 +10,62 @@ public class GameManager : MonoBehaviour
 
     public GameObject island;
 
+    public Button startGameButton, tutorialButton, backButton;
+
+    public Image backgroundImage;
+
     public List<GameObject> powerUpIndicatorPrefabs;
 
     public int level = 0;
 
-    public bool gameOver;
+    public GameState gameState;
 
     private float spawnRange = 9.0f;
 
+    void Awake()
+    {
+        DontDestroyOnLoad(this);
+    }
+
     void Start()
     {
-        gameOver = false;
-        
-        LoadLevel(level);
+        gameState = GameState.TITLE;
+        startGameButton.gameObject.SetActive(true);
+        tutorialButton.gameObject.SetActive(true);
+        backButton.gameObject.SetActive(false);
+        backgroundImage.sprite = Resources.Load<Sprite>("mainmenu");
     }
 
     void Update()
     {
-        if (GameObject.FindGameObjectsWithTag("Enemy").Length <= 0 && GameObject.FindGameObjectsWithTag("Boss").Length <= 0 && !gameOver) loadNextLevel();
+        if (GameObject.FindGameObjectsWithTag("Enemy").Length <= 0 && GameObject.FindGameObjectsWithTag("Boss").Length <= 0 && gameState == GameState.STARTED) loadNextLevel();
+    }
+
+    public void moveToTutorial()
+    {
+        gameState = GameState.TUTORIAL;
+        startGameButton.gameObject.SetActive(false);
+        tutorialButton.gameObject.SetActive(false);
+        backButton.gameObject.SetActive(true);
+        backgroundImage.sprite = Resources.Load<Sprite>("tutorial");
+    }
+
+    public void moveToTitle()
+    {
+        gameState = GameState.TITLE;
+        startGameButton.gameObject.SetActive(true);
+        tutorialButton.gameObject.SetActive(true);
+        backButton.gameObject.SetActive(false);
+        backgroundImage.sprite = Resources.Load<Sprite>("mainmenu");
+    }
+
+    public void moveToGameScene()
+    {
+        SceneManager.LoadScene("Game");
+
+        gameState = GameState.STARTED;
+
+        LoadLevel(level);
     }
 
     void loadNextLevel()
@@ -130,7 +170,9 @@ public class GameManager : MonoBehaviour
 
     void SpawnDummies(int numOfDummies)
     {
-        for (int i = 0; i < numOfDummies; i++) Instantiate(dummyPrefab, GenerateSpawnPosition(), dummyPrefab.transform.rotation);
+        //for (int i = 0; i < numOfDummies; i++) Instantiate(dummyPrefab, GenerateSpawnPosition(), dummyPrefab.transform.rotation);
+        GameObject tempDummy = Instantiate(dummyPrefab, GenerateSpawnPosition(), dummyPrefab.transform.rotation);
+        Debug.Log(tempDummy.transform.position);
     }
 
     void SpawnBosses(int numOfBosses)
@@ -143,5 +185,13 @@ public class GameManager : MonoBehaviour
         float spawnPosX = Random.Range(-spawnRange, spawnRange);
         float spawnPosY = Random.Range(-spawnRange, spawnRange);
         return new Vector3(spawnPosX, 0.0f, spawnPosY);
+    }
+
+    public enum GameState
+    {
+        TITLE,
+        TUTORIAL,
+        STARTED,
+        OVER
     }
 }

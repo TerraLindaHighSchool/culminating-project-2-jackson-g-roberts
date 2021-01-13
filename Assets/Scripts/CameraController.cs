@@ -23,13 +23,9 @@ public class CameraController : MonoBehaviour
 
     void LateUpdate()
     {
-        if (!gameManager.gameOver)
+        if (gameManager.gameState == GameManager.GameState.STARTED)
         {
             orbitAroundPlayer();
-        }
-        else
-        {
-
         }
     }
 
