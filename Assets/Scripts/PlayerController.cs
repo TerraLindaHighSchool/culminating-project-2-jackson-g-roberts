@@ -40,9 +40,9 @@ public class PlayerController : MonoBehaviour
         powerUpIndicator.transform.position = transform.position;
         powerUpIndicator.transform.Rotate(new Vector3(0.0f, 15.0f, 0.0f) * Time.deltaTime);
 
-        if (transform.position.y <= -10)
+        if (transform.position.y <= -10 && gameManager.gameState == GameManager.GameState.STARTED)
         {
-            gameManager.gameState = GameManager.GameState.OVER;
+            gameManager.endGame();
             powerUpState = PowerUp.Type.NONE;
             UpdatePowerUpIndicator();
             Destroy(gameObject);
@@ -51,6 +51,8 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (gameManager.gameState == GameManager.GameState.OVER) return;
+        
         float cameraDirection = followCamera.GetComponent<CameraController>().viewAngleX;
         float cameraVertDirection = followCamera.GetComponent<CameraController>().viewAngleY;
 
@@ -150,6 +152,7 @@ public class PlayerController : MonoBehaviour
             rb.AddForce(collision.gameObject.GetComponent<BossController>().GetPlayerLaunchVector(gameObject), ForceMode.Impulse);
             if (powerUpState == PowerUp.Type.BOUNCE)
             {
+                collision.gameObject.GetComponent<BossController>().isHit(gameObject);
                 List<GameObject> nearbyEnemies = new List<GameObject>();
                 foreach (GameObject enemyObject in GameObject.FindGameObjectsWithTag("Enemy")) if (Vector3.Distance(transform.position, enemyObject.transform.position) <= 5) nearbyEnemies.Add(enemyObject);
                 if (!nearbyEnemies.Contains(collision.gameObject)) nearbyEnemies.Add(collision.gameObject);

@@ -20,6 +20,8 @@ public class GameManager : MonoBehaviour
 
     public GameState gameState;
 
+    public Text enemyCountText, levelText, loseText, winText;
+
     private float spawnRange = 9.0f;
 
     void Awake()
@@ -39,6 +41,13 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         if (GameObject.FindGameObjectsWithTag("Enemy").Length <= 0 && GameObject.FindGameObjectsWithTag("Boss").Length <= 0 && gameState == GameState.STARTED) loadNextLevel();
+        if (GameObject.FindGameObjectsWithTag("Enemy").Length <= 0 && GameObject.FindGameObjectsWithTag("Boss").Length <= 0 && gameState == GameState.STARTED && level >= 7)
+        {
+            gameState = GameState.OVER;
+            winText.gameObject.SetActive(true);
+        }
+        if (enemyCountText != null) enemyCountText.text = "Enemies Remaining: " + (GameObject.FindGameObjectsWithTag("Enemy").Length + GameObject.FindGameObjectsWithTag("Boss").Length);
+        if (levelText != null) levelText.text = "Level: " + level;
     }
 
     public void moveToTutorial()
@@ -63,7 +72,31 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.LoadScene("Game");
 
+        //Coroutine is used to wait 1 frame after LoadScene is called
+        StartCoroutine(LoadGameScene());
+    }
+
+    public void endGame()
+    {
+        Debug.Log("Game Over");
+        gameState = GameState.OVER;
+        loseText.gameObject.SetActive(true);
+    }
+
+    IEnumerator LoadGameScene()
+    {
+        yield return 0;
+
+        SceneManager.SetActiveScene(SceneManager.GetSceneByName("Game"));
+
         gameState = GameState.STARTED;
+
+        enemyCountText = GameObject.Find("RemainingEnemyText").GetComponent<Text>();
+        levelText = GameObject.Find("LevelText").GetComponent<Text>();
+        loseText = GameObject.Find("LoseText").GetComponent<Text>();
+        winText = GameObject.Find("WinText").GetComponent<Text>();
+        loseText.gameObject.SetActive(false);
+        winText.gameObject.SetActive(false);
 
         LoadLevel(level);
     }
@@ -170,9 +203,7 @@ public class GameManager : MonoBehaviour
 
     void SpawnDummies(int numOfDummies)
     {
-        //for (int i = 0; i < numOfDummies; i++) Instantiate(dummyPrefab, GenerateSpawnPosition(), dummyPrefab.transform.rotation);
-        GameObject tempDummy = Instantiate(dummyPrefab, GenerateSpawnPosition(), dummyPrefab.transform.rotation);
-        Debug.Log(tempDummy.transform.position);
+        for (int i = 0; i < numOfDummies; i++) Instantiate(dummyPrefab, GenerateSpawnPosition(), dummyPrefab.transform.rotation);
     }
 
     void SpawnBosses(int numOfBosses)
